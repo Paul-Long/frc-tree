@@ -1,0 +1,11 @@
+.frc-tree {
+  height: 100%;
+  width: 100%;
+  overflow: auto;
+  color: #000000;
+}
+.frc-tree-node:hover {
+  color: #ffffff;
+  background: #000000;
+}
+/*# sourceMappingURL=index.css.map */

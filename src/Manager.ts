@@ -1,7 +1,7 @@
-import {ILabelValueType, currentKey} from './PropsType';
+import {ILabelValueType, layer} from './PropsType';
 
 interface IManagerProps {
-  nodes: ILabelValueType[];
+  nodes?: ILabelValueType[];
 }
 
 class Manager {
@@ -17,7 +17,7 @@ class Manager {
     current: number = 0
   ) => {
     for (let i = 0; i < src.length; i++) {
-      const n = {...src[i], [currentKey]: current};
+      const n = {...src[i], [layer]: current};
       let children = n.children || [];
       if (Object.prototype.hasOwnProperty.call(n, 'children')) {
         delete n.children;
@@ -30,9 +30,14 @@ class Manager {
     return des;
   };
 
+  public setNodes = (nodes?: ILabelValueType[]) => {
+    nodes = nodes || [];
+    this.nodes = this.fSpread(nodes);
+  };
+
   public getNodes = () => {
     return this.nodes;
-  }
+  };
 }
 
 export default Manager;

@@ -17,4 +17,4 @@ export type valueType =
 
 export type renderNode = ReactNode;
 
-export const currentKey = Symbol('__current__');
+export const layer = Symbol('__layer__');
