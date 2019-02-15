@@ -1,0 +1,34 @@
+{
+  "name": "frc-tree",
+  "version": "1.0.0",
+  "description": "react component tree",
+  "main": "lib/index.js",
+  "module": "es/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Paul-Long/frc-tree.git"
+  },
+  "keywords": [
+    "react",
+    "component",
+    "tree"
+  ],
+  "author": "Paul",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Paul-Long/frc-tree/issues"
+  },
+  "homepage": "https://github.com/Paul-Long/frc-tree#readme",
+  "devDependencies": {
+    "@types/classnames": "^2.2.7",
+    "@types/react": "^16.8.3",
+    "@types/react-dom": "^16.8.1",
+    "prettier": "^1.16.4",
+    "react": "^16.8.2",
+    "react-dom": "^16.8.2",
+    "typescript": "^3.3.3"
+  }
+}
