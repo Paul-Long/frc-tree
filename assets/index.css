@@ -1,11 +1,25 @@
 .frc-tree {
-  height: 100%;
-  width: 100%;
   overflow: auto;
   color: #000000;
+  position: relative;
 }
-.frc-tree-node:hover {
+.frc-tree-node {
+  display: flex;
+  align-items: center;
+  position: absolute;
+  left: 0;
+  right: 0;
+}
+.frc-tree-checkbox > .frc-checkbox-title {
+  flex: 1;
+  padding-left: 3px;
+  padding-right: 3px;
+  border-radius: 2px;
+  height: 100%;
+  line-height: 24px;
+}
+.frc-tree-checkbox > .frc-checkbox-title:hover {
   color: #ffffff;
-  background: #000000;
+  background: #172422;
 }
 /*# sourceMappingURL=index.css.map */

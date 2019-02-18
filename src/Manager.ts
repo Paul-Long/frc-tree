@@ -1,4 +1,4 @@
-import {ILabelValueType, layer} from './PropsType';
+import {ILabelValueType, layer, expanded, expandedEnable} from './PropsType';
 
 interface IManagerProps {
   nodes?: ILabelValueType[];
@@ -6,8 +6,10 @@ interface IManagerProps {
 
 class Manager {
   public nodes: ILabelValueType[] = [];
+  public expandedKeys: string[] | number[];
 
   constructor(props: IManagerProps) {
+    this.expandedKeys = [];
     this.nodes = this.fSpread(props.nodes || []);
   }
 
@@ -22,6 +24,10 @@ class Manager {
       if (Object.prototype.hasOwnProperty.call(n, 'children')) {
         delete n.children;
       }
+      n[expanded] = children.length > 0;
+      n[expandedEnable] = this.expandedKeys.some(
+        (k: string | number) => k === n.key
+      );
       des.push(n);
       if (children.length > 0) {
         des = this.fSpread(children, des, current + 1);
