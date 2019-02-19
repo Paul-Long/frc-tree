@@ -23,7 +23,7 @@
   "homepage": "https://github.com/Paul-Long/frc-tree#readme",
   "dependencies": {
     "frc-auto-size": "^1.0.1",
-    "frc-checkbox": "^1.0.2",
+    "frc-checkbox": "^1.0.3",
     "frc-scroll-size": "^1.0.0"
   },
   "devDependencies": {
