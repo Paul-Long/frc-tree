@@ -2,24 +2,60 @@
   overflow: auto;
   color: #000000;
   position: relative;
+  user-select: none;
 }
 .frc-tree-node {
   display: flex;
   align-items: center;
+  flex-direction: row;
   position: absolute;
   left: 0;
-  right: 0;
+  overflow: hidden;
 }
-.frc-tree-checkbox > .frc-checkbox-title {
+.frc-tree-node-title {
+  overflow: hidden;
+  white-space: nowrap;
+  cursor: pointer;
   flex: 1;
-  padding-left: 3px;
-  padding-right: 3px;
+  padding: 0 5px;
   border-radius: 2px;
-  height: 100%;
+  height: 24px;
   line-height: 24px;
 }
-.frc-tree-checkbox > .frc-checkbox-title:hover {
+.frc-tree-node-title:hover {
   color: #ffffff;
   background: #172422;
+}
+.frc-tree-node-selected {
+  color: #ffffff;
+  background: #172422;
+}
+.frc-tree-node-disabled {
+  color: rgba(0, 0, 0, 0.25);
+  cursor: not-allowed;
+}
+.frc-tree-node-disabled:hover {
+  color: rgba(0, 0, 0, 0.25);
+  background: transparent;
+}
+.frc-tree-checkbox > .frc-checkbox-title {
+  display: none;
+}
+.frc-tree-node-icon {
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  min-height: 16px;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+}
+.frc-tree-node-expand-enable > .frc-tree-node-icon {
+  cursor: pointer;
+}
+.frc-tree-node-expand-enable.frc-tree-node-expand-right > .frc-tree-node-icon > svg {
+  transform: rotate(-90deg);
 }
 /*# sourceMappingURL=index.css.map */

@@ -1,7 +1,10 @@
-import React from 'react';
+import React, {ReactText} from 'react';
+import classNames from 'classnames';
 // @ts-ignore
 import AutoSize from 'frc-auto-size';
 import TreeNode from './TreeNode';
+// @ts-ignore
+import scrollSize from 'frc-scroll-size';
 import {
   ILabelValueType,
   valueType,
@@ -23,6 +26,14 @@ export interface ITreeProps {
   maxShowCount?: number;
   nodeHeight?: number;
   checkable?: boolean;
+  defaultExpandedAll?: boolean;
+  expandedKeys?: ReactText[];
+  checkedKeys?: ReactText[];
+  selectedKeys?: ReactText[];
+  onExpand?: Function;
+  onCheck?: Function;
+  onSelect?: Function;
+  showIcon?: boolean;
 }
 
 interface ITreeState {
@@ -30,6 +41,9 @@ interface ITreeState {
   height: number;
   count: number;
   start: number;
+  expandedKeys: ReactText[];
+  checkedKeys: ReactText[];
+  selectedKeys: ReactText[];
 }
 
 interface IChildParams {
@@ -45,7 +59,15 @@ class Tree extends React.Component<ITreeProps, ITreeState> {
     prefixCls: 'frc-tree',
     maxShowCount: 50,
     nodeHeight: 30,
-    checkable: false
+    checkable: false,
+    defaultExpandedAll: false,
+    expandedKeys: [],
+    checkedKeys: [],
+    selectedKeys: [],
+    showIcon: false,
+    onExpand: () => {},
+    onCheck: () => {},
+    onSelect: () => {}
   };
 
   public manager: Manager;
@@ -58,9 +80,17 @@ class Tree extends React.Component<ITreeProps, ITreeState> {
     this.state = {
       width: 0,
       height: 0,
-      count: props.maxShowCount || 50,
-      start: 0
+      start: 0,
+      count: 0,
+      expandedKeys: props.defaultExpandedAll
+        ? this.manager.allKeys()
+        : props.expandedKeys || [],
+      checkedKeys: props.checkedKeys || [],
+      selectedKeys: props.selectedKeys || []
     };
+    this.manager.setExpandedKeys(this.state.expandedKeys);
+    // @ts-ignore
+    this.state.count = this.fCount();
   }
 
   public componentWillReceiveProps(nextProps: ITreeProps) {
@@ -83,17 +113,6 @@ class Tree extends React.Component<ITreeProps, ITreeState> {
     if (!this.tree) {
       return;
     }
-
-    console.log(
-      ' scrollTop => ',
-      this.tree.scrollTop,
-      ' scrollHeight => ',
-      this.tree.scrollHeight,
-      ' clientHeight => ',
-      this.tree.clientHeight,
-      ' startIndex => ',
-      Math.floor(this.tree.scrollTop / (nodeHeight || 30))
-    );
     const {count} = this.state;
     const nodes = this.manager.getNodes();
     let start = Math.floor(this.tree.scrollTop / (nodeHeight || 30));
@@ -103,7 +122,6 @@ class Tree extends React.Component<ITreeProps, ITreeState> {
     if (start < 0) {
       start = 0;
     }
-
     this.setState({start});
   };
 
@@ -131,34 +149,90 @@ class Tree extends React.Component<ITreeProps, ITreeState> {
     );
   };
 
+  public fCallback = (name: string, key: string) => () => {
+    const callback = this.props[name];
+    const data = this.state[key];
+    if (typeof callback === 'function') {
+      callback(data);
+    }
+  };
+
+  public fExpand = (value: string | number, expanded: boolean) => {
+    let keys = this.state.expandedKeys;
+    if (expanded) {
+      keys.push(value);
+    } else {
+      keys = keys.filter((k) => k !== value);
+    }
+    this.manager.setExpandedKeys(keys);
+    this.setState(
+      {expandedKeys: keys, count: this.fCount()},
+      this.fCallback('onExpand', 'expandedKeys')
+    );
+  };
+
   public fRef = (name: string) => (node: HTMLDivElement) => {
     this[name] = node;
   };
 
+  public fCheck = (value: ReactText, checked: boolean) => {
+    let checkedKeys = this.state.checkedKeys || [];
+    if (checked) {
+      checkedKeys.push(value);
+    } else {
+      checkedKeys = checkedKeys.filter((c) => c !== value);
+    }
+    this.setState({checkedKeys}, this.fCallback('onCheck', 'checkedKeys'));
+  };
+
+  public fSelect = (value: ReactText) => {
+    let selectedKeys = this.state.selectedKeys || [];
+    const {multiple} = this.props;
+    const exist = selectedKeys.some((s) => s === value);
+    if (multiple) {
+      if (exist) {
+        selectedKeys = selectedKeys.filter((s) => s !== value);
+      } else {
+        selectedKeys.push(value);
+      }
+    } else {
+      selectedKeys = exist ? [] : [value];
+    }
+    this.setState({selectedKeys}, this.fCallback('onSelect', 'selectedKeys'));
+  };
+
   public renderNodes = () => {
     const {children, nodeHeight, indentSize, prefixCls, checkable} = this.props;
-    const {count, start} = this.state;
-    console.log(start);
+    const {count, start, checkedKeys, selectedKeys} = this.state;
     const nodes = this.manager.getNodes();
     if (nodes && nodes.length > 0) {
       const items = [];
       for (let i = start; i <= start + count; i++) {
         const n = nodes[i];
-        items.push(
-          <TreeNode
-            className={`${prefixCls}-node`}
-            key={n.key}
-            value={n.key}
-            label={n.label}
-            layer={n[layer]}
-            height={nodeHeight}
-            indentSize={indentSize}
-            selectable={checkable}
-            expanded={n[expanded]}
-            expandedEnable={n[expandedEnable]}
-            style={{top: i * (nodeHeight || 30)}}
-          />
-        );
+        if (n) {
+          items.push(
+            <TreeNode
+              className={`${prefixCls}-node`}
+              key={n.key}
+              value={n.key}
+              title={n.title}
+              layer={n[layer]}
+              height={nodeHeight}
+              disabled={!!n.disabled}
+              disableCheckbox={!!n.disableCheckbox}
+              indentSize={indentSize}
+              selectable={checkable}
+              selected={(selectedKeys || []).some((s) => s === n.key)}
+              checked={(checkedKeys || []).some((c) => c === n.key)}
+              expanded={n[expanded]}
+              expandedEnable={n[expandedEnable]}
+              style={{top: i * (nodeHeight || 30)}}
+              onExpand={this.fExpand}
+              onCheck={this.fCheck}
+              onSelect={this.fSelect}
+            />
+          );
+        }
       }
       return items;
     }
@@ -166,19 +240,29 @@ class Tree extends React.Component<ITreeProps, ITreeState> {
   };
 
   public renderChild = (params: IChildParams) => {
-    const {prefixCls, nodeHeight} = this.props;
+    const {prefixCls, nodeHeight, className} = this.props;
+    const cls = classNames(prefixCls, className);
     const nodes = this.manager.getNodes();
+    const yBarSize = scrollSize();
+    const xBarSize = scrollSize('horizontal');
     return (
       <div
-        className={prefixCls}
+        className={cls}
         onScroll={this.fScroll}
-        style={{width: params.width, height: params.height}}
+        style={{
+          width: params.width,
+          height: params.height,
+          marginRight: `-${yBarSize}px`,
+          paddingRight: `${yBarSize}px`,
+          marginBottom: `-${xBarSize}px`,
+          paddingBottom: `${xBarSize}px`
+        }}
         ref={this.fRef('tree')}
       >
         <div
           ref={this.fRef('content')}
           style={{
-            width: params.width,
+            minWidth: '100%',
             height: nodes.length * (nodeHeight || 30)
           }}
         >

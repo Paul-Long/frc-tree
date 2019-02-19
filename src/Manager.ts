@@ -1,4 +1,5 @@
 import {ILabelValueType, layer, expanded, expandedEnable} from './PropsType';
+import {ReactText} from 'react';
 
 interface IManagerProps {
   nodes?: ILabelValueType[];
@@ -6,10 +7,12 @@ interface IManagerProps {
 
 class Manager {
   public nodes: ILabelValueType[] = [];
-  public expandedKeys: string[] | number[];
+  public _nodes: ILabelValueType[] = [];
+  public expandedKeys: string[] | number[] | ReactText[];
 
   constructor(props: IManagerProps) {
     this.expandedKeys = [];
+    this._nodes = props.nodes || [];
     this.nodes = this.fSpread(props.nodes || []);
   }
 
@@ -24,12 +27,10 @@ class Manager {
       if (Object.prototype.hasOwnProperty.call(n, 'children')) {
         delete n.children;
       }
-      n[expanded] = children.length > 0;
-      n[expandedEnable] = this.expandedKeys.some(
-        (k: string | number) => k === n.key
-      );
+      n[expanded] = this.expandedKeys.some((k: string | number) => k === n.key);
+      n[expandedEnable] = children.length > 0;
       des.push(n);
-      if (children.length > 0) {
+      if (children.length > 0 && n[expanded]) {
         des = this.fSpread(children, des, current + 1);
       }
     }
@@ -44,6 +45,19 @@ class Manager {
   public getNodes = () => {
     return this.nodes;
   };
+
+  public allKeys = () => {
+    return this.getNodes()
+      .filter((n) => n[expandedEnable])
+      .map((n) => n.key);
+  };
+
+  public setExpandedKeys = (keys: string[] | number[] | ReactText[]) => {
+    this.expandedKeys = keys || [];
+    this.nodes = this.fSpread(this._nodes);
+  };
+
+  public getCheckedKeys = (value: ReactText, checked: boolean) => {};
 }
 
 export default Manager;

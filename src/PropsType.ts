@@ -2,9 +2,11 @@ import {ReactNode} from 'react';
 
 export interface ILabelValueType {
   key: string | number;
-  label: ReactNode | string;
+  title: ReactNode | string;
   children?: ILabelValueType[];
   layer: number;
+  disabled: boolean;
+  disableCheckbox: boolean;
 }
 
 export type valueType =

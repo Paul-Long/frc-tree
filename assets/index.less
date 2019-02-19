@@ -1,28 +1,80 @@
-.frc-tree {
-  //height: 100%;
-  //width: 100%;
+@frc-tree: frc-tree;
+.@{frc-tree} {
   overflow: auto;
   color: #000000;
   position: relative;
+  user-select: none;
   &-node {
     display: flex;
     align-items: center;
+    flex-direction: row;
     position: absolute;
     left: 0;
-    right: 0;
-  }
-  &-checkbox {
-    & > .frc-checkbox-title {
+    overflow: hidden;
+    &-title {
+      overflow: hidden;
+      white-space: nowrap;
+      cursor: pointer;
       flex: 1;
-      padding-left: 3px;
-      padding-right: 3px;
+      padding: 0 5px;
       border-radius: 2px;
-      height: 100%;
+      height: 24px;
       line-height: 24px;
       &:hover {
         color: #ffffff;
         background: #172422;
       }
     }
+    &-selected {
+      color: #ffffff;
+      background: #172422;
+    }
+    &-disabled {
+      color: rgba(0, 0, 0, 0.25);
+      cursor: not-allowed;
+      &:hover {
+        color: rgba(0, 0, 0, 0.25);
+        background: transparent;
+      }
+    }
+  }
+  &-checkbox {
+    & > .frc-checkbox-title {
+      display: none;
+    }
+  }
+}
+
+.@{frc-tree}-node-icon {
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  min-height: 16px;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+}
+
+.@{frc-tree}-node-expand-enable {
+  & > .@{frc-tree}-node-icon {
+    cursor: pointer;
+  }
+}
+
+.@{frc-tree}-node-expand-space {
+  & > .@{frc-tree}-node-icon {
+  }
+}
+
+.@{frc-tree}-node-expand-enable.@{frc-tree}-node-expand-right {
+  & > .@{frc-tree}-node-icon > svg {
+    transform: rotate(-90deg);
+  }
+}
+
+.@{frc-tree}-node-expand-enable.@{frc-tree}-node-expand-down {
+  & > .@{frc-tree}-node-icon {
   }
 }
