@@ -7,7 +7,6 @@ import TreeNode from './TreeNode';
 import scrollSize from 'frc-scroll-size';
 import {
   ILabelValueType,
-  valueType,
   renderNode,
   layer,
   expandedEnable,
@@ -18,10 +17,8 @@ import Manager from './Manager';
 export interface ITreeProps {
   className?: string;
   indentSize?: number;
-  value?: valueType;
   multiple?: boolean;
   prefixCls?: string;
-  children?: renderNode;
   nodes?: ILabelValueType[];
   maxShowCount?: number;
   nodeHeight?: number;
