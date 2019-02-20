@@ -9,8 +9,9 @@ import {
   ILabelValueType,
   renderNode,
   layer,
-  expandedEnable,
-  expanded
+  _expandedEnable_,
+  _expanded_,
+  _checked_
 } from './PropsType';
 import Manager from './Manager';
 
@@ -24,6 +25,7 @@ export interface ITreeProps {
   nodeHeight?: number;
   checkable?: boolean;
   defaultExpandedAll?: boolean;
+  defaultCheckedKeys?: ReactText[];
   expandedKeys?: ReactText[];
   checkedKeys?: ReactText[];
   selectedKeys?: ReactText[];
@@ -73,7 +75,12 @@ class Tree extends React.Component<ITreeProps, ITreeState> {
 
   constructor(props: ITreeProps) {
     super(props);
-    this.manager = new Manager({nodes: props.nodes});
+    this.manager = new Manager({
+      nodes: props.nodes,
+      expandedKeys: props.expandedKeys,
+      checkedKeys: props.checkedKeys,
+      defaultCheckedKeys: props.defaultCheckedKeys
+    });
     this.state = {
       width: 0,
       height: 0,
@@ -82,7 +89,10 @@ class Tree extends React.Component<ITreeProps, ITreeState> {
       expandedKeys: props.defaultExpandedAll
         ? this.manager.allKeys()
         : props.expandedKeys || [],
-      checkedKeys: props.checkedKeys || [],
+      checkedKeys: this.manager.setCheckedKeys(
+        props.defaultCheckedKeys || [],
+        true
+      ),
       selectedKeys: props.selectedKeys || []
     };
     this.manager.setExpandedKeys(this.state.expandedKeys);
@@ -90,9 +100,29 @@ class Tree extends React.Component<ITreeProps, ITreeState> {
     this.state.count = this.fCount();
   }
 
+  componentDidMount() {
+    const {checkedKeys} = this.props;
+    this.setState({
+      checkedKeys: this.manager.setCheckedKeys(checkedKeys || [], true)
+    });
+  }
+
   public componentWillReceiveProps(nextProps: ITreeProps) {
     if (nextProps.nodes !== this.props.nodes) {
       this.manager.setNodes(nextProps.nodes);
+    }
+    if (nextProps.expandedKeys !== this.props.expandedKeys) {
+      this.setState({expandedKeys: nextProps.expandedKeys || []}, () =>
+        this.manager.setExpandedKeys(this.state.expandedKeys)
+      );
+    }
+    if (nextProps.checkedKeys !== this.props.checkedKeys) {
+      this.setState({
+        checkedKeys: this.manager.setCheckedKeys(
+          nextProps.checkedKeys || [],
+          true
+        )
+      });
     }
   }
 
@@ -173,13 +203,11 @@ class Tree extends React.Component<ITreeProps, ITreeState> {
   };
 
   public fCheck = (value: ReactText, checked: boolean) => {
-    let checkedKeys = this.state.checkedKeys || [];
-    if (checked) {
-      checkedKeys.push(value);
-    } else {
-      checkedKeys = checkedKeys.filter((c) => c !== value);
-    }
-    this.setState({checkedKeys}, this.fCallback('onCheck', 'checkedKeys'));
+    this.manager.setCheckedKeys(value, checked);
+    this.setState(
+      {checkedKeys: this.manager.setCheckedKeys(value, checked)},
+      this.fCallback('onCheck', 'checkedKeys')
+    );
   };
 
   public fSelect = (value: ReactText) => {
@@ -198,9 +226,18 @@ class Tree extends React.Component<ITreeProps, ITreeState> {
     this.setState({selectedKeys}, this.fCallback('onSelect', 'selectedKeys'));
   };
 
+  private getChecked = (node: ILabelValueType) => {
+    const {defaultCheckedKeys} = this.props;
+    if (!!node.disabled || !!node.disableCheckbox) {
+      return (defaultCheckedKeys || []).some((c) => c === node.key);
+    } else {
+      return node[_checked_];
+    }
+  };
+
   public renderNodes = () => {
     const {children, nodeHeight, indentSize, prefixCls, checkable} = this.props;
-    const {count, start, checkedKeys, selectedKeys} = this.state;
+    const {count, start, selectedKeys} = this.state;
     const nodes = this.manager.getNodes();
     if (nodes && nodes.length > 0) {
       const items = [];
@@ -220,9 +257,9 @@ class Tree extends React.Component<ITreeProps, ITreeState> {
               indentSize={indentSize}
               selectable={checkable}
               selected={(selectedKeys || []).some((s) => s === n.key)}
-              checked={(checkedKeys || []).some((c) => c === n.key)}
-              expanded={n[expanded]}
-              expandedEnable={n[expandedEnable]}
+              checked={this.getChecked(n)}
+              expanded={n[_expanded_]}
+              expandedEnable={n[_expandedEnable_]}
               style={{top: i * (nodeHeight || 24)}}
               onExpand={this.fExpand}
               onCheck={this.fCheck}

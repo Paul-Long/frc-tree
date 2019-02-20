@@ -20,5 +20,6 @@ export type valueType =
 export type renderNode = ReactNode;
 
 export const layer = Symbol('__layer__');
-export const expanded = Symbol('__expanded__');
-export const expandedEnable = Symbol('__expandedEnable__');
+export const _expanded_ = Symbol('__expanded__');
+export const _expandedEnable_ = Symbol('__expandedEnable__');
+export const _checked_ = Symbol('__checked__');
