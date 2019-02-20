@@ -55,7 +55,7 @@ class Tree extends React.Component<ITreeProps, ITreeState> {
     indentSize: 17,
     prefixCls: 'frc-tree',
     maxShowCount: 50,
-    nodeHeight: 30,
+    nodeHeight: 24,
     checkable: false,
     defaultExpandedAll: false,
     expandedKeys: [],
@@ -112,7 +112,7 @@ class Tree extends React.Component<ITreeProps, ITreeState> {
     }
     const {count} = this.state;
     const nodes = this.manager.getNodes();
-    let start = Math.floor(this.tree.scrollTop / (nodeHeight || 30));
+    let start = Math.floor(this.tree.scrollTop / (nodeHeight || 24));
     if (start >= nodes.length - count) {
       start = nodes.length - count - 1;
     }
@@ -126,7 +126,7 @@ class Tree extends React.Component<ITreeProps, ITreeState> {
     const {nodeHeight} = props;
     const {height} = this.state;
     const nodes = this.manager.getNodes();
-    let maxCount = Math.round((height || 0) / (nodeHeight || 30));
+    let maxCount = Math.round((height || 0) / (nodeHeight || 24));
     if (maxCount > 0) {
       maxCount += 3;
     }
@@ -223,7 +223,7 @@ class Tree extends React.Component<ITreeProps, ITreeState> {
               checked={(checkedKeys || []).some((c) => c === n.key)}
               expanded={n[expanded]}
               expandedEnable={n[expandedEnable]}
-              style={{top: i * (nodeHeight || 30)}}
+              style={{top: i * (nodeHeight || 24)}}
               onExpand={this.fExpand}
               onCheck={this.fCheck}
               onSelect={this.fSelect}

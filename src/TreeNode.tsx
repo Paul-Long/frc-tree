@@ -28,7 +28,7 @@ export interface ITreeNodeProps {
 
 class TreeNode extends React.Component<ITreeNodeProps> {
   public static defaultProps = {
-    height: 30,
+    height: 24,
     indentSize: 17,
     selectable: false,
     expanded: false,
@@ -82,21 +82,36 @@ class TreeNode extends React.Component<ITreeNodeProps> {
   };
 
   renderIcon = () => {
-    const {className, showIcon} = this.props;
+    const {className, showIcon, expandedEnable, height} = this.props;
+    let children = null;
+    if (expandedEnable) {
+      children = (
+        <svg
+          viewBox='0 0 1024 1024'
+          width='10px'
+          height='10px'
+          fill='currentColor'
+          aria-hidden='true'
+        >
+          <path d='M840.4 300H183.6c-19.7 0-30.7 20.8-18.5 35l328.4 380.8c9.4 10.9 27.5 10.9 37 0L858.9 335c12.2-14.2 1.2-35-18.5-35z' />
+        </svg>
+      );
+    }
     if (showIcon) {
       return null;
     } else {
       return (
-        <span className={`${className}-icon`} onClick={this.fClick}>
-          <svg
-            viewBox='0 0 1024 1024'
-            width='10px'
-            height='10px'
-            fill='currentColor'
-            aria-hidden='true'
-          >
-            <path d='M840.4 300H183.6c-19.7 0-30.7 20.8-18.5 35l328.4 380.8c9.4 10.9 27.5 10.9 37 0L858.9 335c12.2-14.2 1.2-35-18.5-35z' />
-          </svg>
+        <span
+          className={`${className}-icon`}
+          onClick={this.fClick}
+          style={{
+            width: `${height}px`,
+            height,
+            minWidth: `${height}px`,
+            minHeight: height
+          }}
+        >
+          {children}
         </span>
       );
     }
